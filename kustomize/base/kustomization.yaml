@@ -1,8 +1,14 @@
 commonLabels:
   app: helm-indexer
 resources:
-  - resources/deployment.yaml
+- resources/deployment.yaml
 secretGenerator:
-- name: helm-indexer-secret
-  envs:
-    - secret.env
+- envs:
+  - secret.env
+  name: helm-indexer-secret
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+images:
+- name: helm-indexer
+  newName: docker.io/alixcook11/s3-helm-indexer
+  newTag: b6b105f

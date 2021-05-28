@@ -37,9 +37,6 @@ def download_archive(url, file_name):
         r.raise_for_status()
         with open(file_name, 'wb') as f:
             for chunk in r.iter_content(chunk_size=8192):
-                # If you have chunk encoded response uncomment if
-                # and set chunk_size parameter to None.
-                #if chunk:
                 f.write(chunk)
 
 
@@ -88,8 +85,6 @@ def main():
                     continue
                 s3_chart_key = f"{s3_key}/{chart_name}-{chart_version}.tgz"
                 indexed_charts[s3_chart_key] = chart
-        # TODO: generate map that's key to last modified
-        # if last modified changes, download, re-add to index? or do we even care?
         s3_chart_set = set()
         has_all_objects = False
         next_token = None

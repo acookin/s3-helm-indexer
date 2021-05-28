@@ -16,8 +16,8 @@ spec:
         app: helm-indexer
     spec:
       containers:
-      - image: docker.io/alixcook11/helm-indexer:0.1.0
-        name: helm-indexer
+      - name: helm-indexer
+        image: helm-indexer
         env:
         - name: ACCESS_KEY
           valueFrom:
