@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helm-indexer
+  labels:
+    app: helm-indexer
+spec:
+  selector:
+    matchLabels:
+      app: helm-indexer
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: helm-indexer
+    spec:
+      containers:
+      - image: docker.io/alixcook11/helm-indexer:0.1.0
+        name: helm-indexer
+        env:
+        - name: ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: helm-indexer-secret
+              key: ACCESS_KEY
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: helm-indexer-secret
+              key: SECRET_KEY
+        - name: S3_BUCKET
+          value: "datawire-static-files"
+        - name: S3_KEY
+          value: "ambassador-dev"
+

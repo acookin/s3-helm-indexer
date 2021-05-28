@@ -1,0 +1,8 @@
+commonLabels:
+  app: helm-indexer
+resources:
+  - resources/deployment.yaml
+secretGenerator:
+- name: helm-indexer-secret
+  envs:
+    - secret.env
