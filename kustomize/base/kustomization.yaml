@@ -2,10 +2,6 @@ commonLabels:
   app: helm-indexer
 resources:
 - resources/deployment.yaml
-secretGenerator:
-- envs:
-  - secret.env
-  name: helm-indexer-secret
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 images:
