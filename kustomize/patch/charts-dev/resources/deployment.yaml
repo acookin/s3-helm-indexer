@@ -1,0 +1,12 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: helm-indexer
+spec:
+  template:
+    spec:
+      containers:
+      - name: helm-indexer
+        env:
+        - name: S3_KEY
+          value: "charts-dev"
