@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: helm-indexer
+  namespace: helm-infra
   labels:
     app: helm-indexer
 spec:
