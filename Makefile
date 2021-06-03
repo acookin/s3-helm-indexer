@@ -6,14 +6,14 @@ build:
 .PHONY: build
 
 publish: build
-	@[ -n "$(REGISTRY)" ] || (echo "REGISTRY must be set to push"; exit 1)
-	@docker tag $(IMAGE_NAME):$(TAG) $(REGISTRY)/$(IMAGE_NAME):$(TAG)
-	@docker push $(REGISTRY)/$(IMAGE_NAME):$(TAG)
+	@[ -n "$(DEV_REGISTRY)" ] || (echo "DEV_REGISTRY must be set to push"; exit 1)
+	@docker tag $(IMAGE_NAME):$(TAG) $(DEV_REGISTRY)/$(IMAGE_NAME):$(TAG)
+	@docker push $(DEV_REGISTRY)/$(IMAGE_NAME):$(TAG)
 .PHONY: publish
 
 set-image: publish
-	@echo "Setting image to $(REGISTRY)/$(IMAGE_NAME):$(TAG)"
-	@(cd kustomize/base && kustomize edit set image helm-indexer=$(REGISTRY)/$(IMAGE_NAME):$(TAG))
+	@echo "Setting image to $(DEV_REGISTRY)/$(IMAGE_NAME):$(TAG)"
+	@(cd kustomize/base && kustomize edit set image helm-indexer=$(DEV_REGISTRY)/$(IMAGE_NAME):$(TAG))
 .PHONY: set-image
 
 deploy:

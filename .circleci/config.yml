@@ -1,0 +1,62 @@
+version: 2.1
+
+orbs:
+  slack: circleci/slack@4.4.2
+  node: circleci/node@4.2.0
+
+executors:
+  linux:
+    machine:
+      image: "ubuntu-1604:202010-01"
+  docker_builder:
+    machine:
+      image: "ubuntu-1604:202010-01"
+      docker_layer_caching: true
+
+commands:
+  "repo-checkout":
+    steps:
+      - checkout
+      - run:
+          name: Configure Internal Go Module access
+          command: git config --global url."https://${GITHUB_TOKEN}:@github.com/".insteadOf "https://github.com/"
+      - run:
+          name: "Docker login"
+          command: |
+            echo "${DOCKER_LOGIN_JSON_KEY}" | docker login -u _json_key --password-stdin "${DEV_REGISTRY%%/*}"
+  build:
+    parameters:
+      push:
+        type: boolean
+        default: false
+    steps:
+      - checkout
+      - run:
+          name: "Docker login"
+          command: |
+            echo "${DOCKER_LOGIN_JSON_KEY}" | docker login -u _json_key --password-stdin "${DEV_REGISTRY%%/*}"
+      - run:
+          name: Build
+          command: make build
+      - when:
+          condition: <<parameters.push>>
+          steps:
+            - run:
+                name: Push Images
+                command: make publish
+
+jobs:
+  build_and_release:
+    executor: docker_builder
+    steps:
+      - build:
+          push: true
+
+workflows:
+  "Build":
+    # Run this workflow on just 'master' and PRs.
+    jobs:
+      - build_and_release:
+          filters:
+            branches:
+              only: /^master$/
