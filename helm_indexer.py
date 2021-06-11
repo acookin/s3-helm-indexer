@@ -16,7 +16,7 @@ S3_URL_FORMAT = "https://{bucket}.s3.amazonaws.com"
 
 def get_index_yaml(bucket: str, key: str):
     url = S3_URL_FORMAT.format(bucket=bucket)
-    url = f"{url}/{key}/index.yaml"
+    url = path.join(url, key, 'index.yaml')
     r = requests.get(url)
     r.raise_for_status()
     return yaml.load(r.text, Loader=yaml.SafeLoader)
@@ -70,7 +70,14 @@ def main():
     access_key = get_env_or_die('ACCESS_KEY')
     secret_key = get_env_or_die('SECRET_KEY')
     bucket = get_env_or_die('S3_BUCKET')
-    s3_key = get_env_or_die('S3_KEY')
+    s3_key = path.join(get_env_or_die('S3_KEY'), "")
+
+    if getenv('LOG_LEVEL') == 'debug':
+        logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
+    else:
+        logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+
+    logging.info(f"Beginning to index charts at s3://{bucket}/{s3_key}")
 
     while True:
         s3_client = boto3.client('s3', aws_access_key_id=access_key, aws_secret_access_key=secret_key)
@@ -114,6 +121,7 @@ def main():
             index_yaml = add_chart_entries(bucket, s3_key, to_add, index_yaml)
         index_yaml_bytes = yaml.dump(index_yaml, default_flow_style=False)
         s3_client.put_object(Body=index_yaml_bytes, Bucket=bucket, Key=path.join(s3_key, 'index.yaml'))
+        logging.info(f"Finished indexing helm charts for {bucket}/{s3_key}")
         logging.debug(f"Sleeping 5 seconds")
         sleep(5)
 
