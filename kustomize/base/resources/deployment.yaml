@@ -17,9 +17,12 @@ spec:
         app: helm-indexer
     spec:
       containers:
+
       - name: helm-indexer
         image: helm-indexer
         env:
+        - name: CHART_ARCHIVE_DIRECTORY
+          value: "/chart-archive/"
         - name: ACCESS_KEY
           valueFrom:
             secretKeyRef:
