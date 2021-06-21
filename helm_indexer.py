@@ -90,7 +90,7 @@ def main():
                 chart_version = chart.get('version')
                 if chart_name is None or chart_version is None:
                     continue
-                s3_chart_key = f"{s3_key}/{chart_name}-{chart_version}.tgz"
+                s3_chart_key = path.join(s3_key, f"{chart_name}-{chart_version}.tgz")
                 indexed_charts[s3_chart_key] = chart
         s3_chart_set = set()
         has_all_objects = False

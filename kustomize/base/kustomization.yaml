@@ -7,4 +7,4 @@ kind: Kustomization
 images:
 - name: helm-indexer
   newName: docker.io/datawire/s3-helm-indexer
-  newTag: bb36981
+  newTag: c905599
