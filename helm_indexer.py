@@ -93,7 +93,9 @@ def main():
                 s3_chart_set.add(key)
         remove_stale_charts(directory, s3_key, s3_chart_set)
         index_file = index_charts(directory, bucket, s3_key)
-        s3_client.put_object(Body=index_file, Bucket=bucket, Key=path.join(s3_key, 'index.yaml'))
+        with open(index_file, 'r') as f:
+            index_content = f.read()
+            s3_client.put_object(Body=index_content, Bucket=bucket, Key=path.join(s3_key, 'index.yaml'))
         logging.info(f"Finished indexing helm charts for {bucket}/{s3_key}")
         logging.debug(f"Sleeping 5 seconds")
         sleep(5)
