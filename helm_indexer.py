@@ -1,5 +1,5 @@
 import boto3
-import requests
+import tempfile
 from os import path, listdir, getenv, makedirs, remove
 import subprocess
 import sys
@@ -19,15 +19,12 @@ def remove_stale_charts(directory, s3_key, s3_chart_set):
             remove(path.join(chart_dir, f))
 
 
-def download_archive(url, file_name):
-    if not path.isdir(path.dirname(file_name)):
-        makedirs(path.dirname(file_name))
-
-    with requests.get(url, stream=True) as r:
-        r.raise_for_status()
-        with open(file_name, 'wb') as f:
-            for chunk in r.iter_content(chunk_size=8192):
-                f.write(chunk)
+def download_archive(s3_client, bucket, key, file_name):
+    dirname = path.dirname(file_name)
+    if not path.isdir(dirname):
+        makedirs(dirname)
+    # TODO: error handling
+    s3_client.download_file(bucket, key, file_name)
 
 
 def index_charts(directory, bucket, s3_key):
@@ -86,9 +83,7 @@ def main():
                     continue
                 file_path = path.join(directory, key)
                 if not path.isfile(file_path):
-                    url = S3_URL_FORMAT.format(bucket=bucket)
-                    url = f"{url}/{key}"
-                    download_archive(url, file_path)
+                    download_archive(s3_client, bucket, key, file_path)
 
                 s3_chart_set.add(key)
         remove_stale_charts(directory, s3_key, s3_chart_set)
